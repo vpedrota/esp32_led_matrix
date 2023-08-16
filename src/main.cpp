@@ -14,6 +14,8 @@ typedef struct {
     bool leds[HEIGHT][WIDTH];
 } LedMatrix;
 
+LedMatrix matrix;
+
 int ALPHABET_3x5[27][5][3] = {
     // A
     {
@@ -215,6 +217,7 @@ int ALPHABET_3x5[27][5][3] = {
         {0, 1, 0},
         {0, 1, 0}
     },
+    // Z
     {
         {1, 1, 1},
         {0, 0, 1},
@@ -239,16 +242,12 @@ void displayCharacterOnLedMatrix(LedMatrix *matrix, int c[][3], int offsetX, int
       int matrixX = x + offsetX;
       int matrixY = y + offsetY;
       
-      // Verifique se a coordenada calculada está dentro da matriz
       if (matrixX >= 0 && matrixX < WIDTH && matrixY >= 0 && matrixY < HEIGHT) {
         matrix->leds[matrixY][matrixX] = c[CHAR_HEIGHT - y - 1][x];
       }
     }
   }
 }
-
-LedMatrix matrix;
-
 
 int return_led_position(int x, int y) {
 
@@ -263,25 +262,19 @@ int return_led_position(int x, int y) {
   return x * 8 + y + compensation;
 }
 
-void setup(){
-  initializeLedMatrix(&matrix);
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(20);
-}
 
-void loop() {
+void printPhrase(char *phrase){
 
   int positionX = WIDTH; 
   int positionY = (HEIGHT - CHAR_HEIGHT) / 2; 
   int i,j;
-  const char *palavra = "lucasgay";
+  
+  while (positionX >= -(CHAR_WIDTH+1) * ((int) strlen(phrase))) {
 
-  while (true) {
+    initializeLedMatrix(&matrix);  
 
-    initializeLedMatrix(&matrix);  // Limpa a matriz
-
-    for(i = 0; i < strlen(palavra); i++){
-      displayCharacterOnLedMatrix(&matrix, ALPHABET_3x5[palavra[i] - 'a'], positionX + 4*i, positionY);
+    for(i = 0; i < strlen(phrase); i++){
+      displayCharacterOnLedMatrix(&matrix, ALPHABET_3x5[phrase[i] - 'a'], positionX + 4*i, positionY);
     }
    
     for(i = 0; i < HEIGHT; i++){
@@ -293,11 +286,20 @@ void loop() {
     FastLED.show();
     
     positionX--;
-    
-    if (positionX < -(CHAR_WIDTH+1) * ((int) strlen(palavra))) {
-        positionX = WIDTH;
-    }
 
-    delay(500);
+    delay(400);
   }
+
+}
+
+void setup(){
+  initializeLedMatrix(&matrix);
+  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.setBrightness(20);
+}
+
+void loop() {
+    char* teste = "tequila";
+    printPhrase(teste);
+  
 }
