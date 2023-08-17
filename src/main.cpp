@@ -16,6 +16,7 @@ typedef struct {
 
 LedMatrix matrix;
 
+
 int ALPHABET_3x5[27][5][3] = {
     // A
     {
@@ -267,19 +268,36 @@ void printPhrase(char *phrase){
 
   int positionX = WIDTH; 
   int positionY = (HEIGHT - CHAR_HEIGHT) / 2; 
-  int i,j;
+  int i, j, space = 0;
   
   while (positionX >= -(CHAR_WIDTH+1) * ((int) strlen(phrase))) {
 
     initializeLedMatrix(&matrix);  
 
+    
+    space = 0;
     for(i = 0; i < strlen(phrase); i++){
-      displayCharacterOnLedMatrix(&matrix, ALPHABET_3x5[phrase[i] - 'a'], positionX + 4*i, positionY);
+        if(phrase[i] == ' ') {
+            space+=2;
+            continue;
+        };
+
+        if(phrase[i] == 'i'){
+            space-=1;
+        }
+        
+        displayCharacterOnLedMatrix(&matrix,  ALPHABET_3x5[phrase[i] - 'a'], positionX + space, positionY);
+
+        if(phrase[i] == 'i'){
+            space-=1;
+        }
+
+        space+=4;
     }
    
     for(i = 0; i < HEIGHT; i++){
       for ( j = 0; j < WIDTH; j++) {
-        leds[return_led_position(i, j)] =  matrix.leds[i][j] ? CRGB::Blue : 0;
+        leds[return_led_position(i, j)] =  matrix.leds[i][j] ? CRGB::Green : CRGB::Pink;
       }
     }
 
@@ -287,7 +305,7 @@ void printPhrase(char *phrase){
     
     positionX--;
 
-    delay(400);
+    delay(100);
   }
 
 }
@@ -299,7 +317,7 @@ void setup(){
 }
 
 void loop() {
-    char* teste = "tequila";
+    char* teste = "o palmeiras nao tem mundial";
     printPhrase(teste);
   
 }
